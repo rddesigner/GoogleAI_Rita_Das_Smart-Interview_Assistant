@@ -48,13 +48,13 @@ ${transcript}`;
   }
 
   async analyzeMistakes(question: string, answer: string): Promise<string> {
-    const prompt = `You are a meticulous communication coach. Your task is to analyze a candidate's answer for grammatical errors, awkward phrasing, and poor word choice.
+    const prompt = `You are a meticulous communication coach. Your task is to analyze a candidate's answer strictly for grammatical mistakes and incorrect word use. Do not check for any other types of errors like awkward phrasing, tone, or conciseness.
 Question asked: "${question}"
 Candidate's answer: "${answer}"
 
 You must analyze the answer and return a JSON array of objects. Each object represents a segment of the original answer.
 - The 'text' from all segments combined MUST perfectly reconstruct the original answer, including spaces and punctuation.
-- A segment should be marked as an error ('isError': true) only for clear mistakes.
+- A segment should be marked as an error ('isError': true) only for clear grammatical mistakes or incorrect word usage.
 - If a segment is an error, provide a concise 'correction'.
 - If there are no mistakes, return a single segment object containing the entire answer with 'isError': false.
 
