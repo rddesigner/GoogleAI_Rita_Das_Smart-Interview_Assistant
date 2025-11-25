@@ -1,0 +1,177 @@
+<div class="flex flex-col h-screen bg-gray-900 text-gray-100">
+  <header class="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 p-4 shadow-lg">
+    <h1 class="text-xl md:text-2xl font-bold text-center text-indigo-400">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline-block -mt-1 mr-2" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"></path><path d="M12 6c-3.309 0-6 2.691-6 6s2.691 6 6 6 6-2.691 6-6-2.691-6-6-6zm0 10c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4z"></path><path d="M12 10c-1.103 0-2 .897-2 2s.897 2 2 2 2-.897 2-2-.897-2-2-2z"></path>
+      </svg>
+      Smart Interview Assistant
+    </h1>
+  </header>
+
+  <main class="flex-1 flex flex-col items-center justify-center p-4 overflow-hidden">
+    @if (appState() === 'initial') {
+      <div class="text-center p-8 bg-gray-800 rounded-lg shadow-2xl animate-fade-in">
+        <h2 class="text-3xl font-semibold mb-4 text-white">Welcome!</h2>
+        <p class="text-gray-400 mb-8 max-w-md mx-auto">
+          Ready to ace your next UX interview? Upload your resume to begin a personalized, AI-powered practice session.
+        </p>
+        <label for="resume-upload" class="cursor-pointer inline-block px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-500 transition-colors duration-300 shadow-lg">
+          Upload Resume (PDF)
+        </label>
+        <input id="resume-upload" type="file" class="hidden" (change)="onFileSelected($event)" accept=".pdf" />
+      </div>
+    } @else {
+      <div class="w-full max-w-4xl h-full flex flex-col bg-gray-800 rounded-lg shadow-2xl overflow-hidden">
+        <!-- Chat messages -->
+        <div #chatContainer class="flex-1 p-6 space-y-6 overflow-y-auto">
+          @for (message of conversation(); track message.id) {
+            <!-- System Message -->
+            @if (message.role === 'system') {
+              <div class="text-center text-sm text-gray-500 italic my-2 animate-fade-in-up">
+                {{ message.text }}
+              </div>
+            }
+            <!-- Assistant Message -->
+            @if (message.role === 'assistant') {
+              <div class="flex items-start gap-4 animate-fade-in-up">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white">AI</div>
+                <div class="bg-gray-700 rounded-lg p-4 max-w-xl">
+                  <p class="whitespace-pre-wrap">{{ message.text }}</p>
+                </div>
+              </div>
+            }
+            <!-- User Message -->
+            @if (message.role === 'user') {
+              <div class="flex flex-col items-end animate-fade-in-up">
+                  <div class="flex items-start gap-4 justify-end">
+                      <div class="bg-blue-600 rounded-lg p-4 max-w-xl order-1">
+                          <p class="whitespace-pre-wrap">{{ message.text }}</p>
+                      </div>
+                      <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center font-bold text-white order-2">You</div>
+                  </div>
+                  <div class="mt-2 flex gap-2 items-center">
+                      @if (message.isAnalyzing()) {
+                          <div class="text-sm text-gray-400 flex items-center gap-2">
+                            <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            Analyzing...
+                          </div>
+                      } @else {
+                          <button (click)="requestAnalysis('mistakes', message)" class="text-xs px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors">My Mistakes</button>
+                          <button (click)="requestAnalysis('suggestion', message)" class="text-xs px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors">Suggested Answer</button>
+                      }
+                  </div>
+              </div>
+            }
+          }
+          @if (appState() === 'loading') {
+            <div class="flex items-start gap-4 animate-fade-in-up">
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white">AI</div>
+                <div class="bg-gray-700 rounded-lg p-4 max-w-xl">
+                  <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse [animation-delay:0.2s]"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse [animation-delay:0.4s]"></div>
+                  </div>
+                </div>
+            </div>
+          }
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-gray-900/50 border-t border-gray-700 relative">
+          @if (isListening() && formattedCountdown()) {
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-indigo-400 font-mono text-lg rounded-md animate-pulse">
+              {{ formattedCountdown() }}
+            </div>
+          }
+          <form (submit)="$event.preventDefault(); submitAnswer()" class="flex items-center gap-4">
+            <textarea
+              #userInputElement
+              [value]="userInput()"
+              (input)="userInput.set(userInputElement.value)"
+              (keydown.enter)="$event.shiftKey ? null : submitAnswer(); $event.shiftKey ? null : $event.preventDefault()"
+              rows="1"
+              placeholder="Type your answer or use the microphone..."
+              class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              [disabled]="appState() === 'loading'"
+            ></textarea>
+            <button
+              type="button"
+              (click)="startListening()"
+              class="p-3 rounded-full transition-colors duration-200"
+              [class.bg-red-500]="isListening()"
+              [class.text-white]="isListening()"
+              [class.bg-gray-700]="!isListening()"
+              [class.hover:bg-gray-600]="!isListening()"
+              [disabled]="appState() === 'loading'"
+              title="Record Answer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+            </button>
+            <button
+              type="submit"
+              class="p-3 bg-indigo-600 rounded-full hover:bg-indigo-500 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
+              [disabled]="!userInput().trim() || appState() === 'loading'"
+              title="Send Answer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    }
+  </main>
+</div>
+
+<!-- Modal Overlay -->
+@if (modalData(); as modal) {
+  <div class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 animate-fade-in-fast" (click)="closeModal()">
+    <div class="bg-gray-800 rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col" (click)="$event.stopPropagation()">
+      <header class="flex items-center justify-between p-4 border-b border-gray-700">
+        <h3 class="text-lg font-semibold text-indigo-400">{{ modal.title }}</h3>
+        <div class="flex items-center gap-2">
+            @if (modal.isSuggestion) {
+                <button (click)="playSuggestionAudio()" title="Play audio" class="p-2 rounded-full hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M7 6v12l10-6z"></path></svg>
+                </button>
+            }
+            <button (click)="closeModal()" title="Close" class="p-2 rounded-full hover:bg-gray-700 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+        </div>
+      </header>
+      <div class="p-6 overflow-y-auto leading-relaxed">
+        @if(modal.isSuggestion) {
+            <p class="whitespace-pre-wrap text-gray-300">{{ modal.suggestionContent }}</p>
+        } @else {
+            <p class="text-gray-300 text-lg">
+                @for(segment of modal.mistakeContent; track $index) {
+                    @if (segment.isError) {
+                        <span class="inline-flex flex-col align-top mx-1">
+                           <span class="text-green-500 font-semibold text-sm px-1 rounded-sm bg-green-900/50 -mb-1 z-10 self-start">{{ segment.correction }}</span>
+                           <span class="border-b-2 border-red-500/80">{{ segment.text }}</span>
+                        </span>
+                    } @else {
+                        <span>{{ segment.text }}</span>
+                    }
+                }
+            </p>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+<style>
+  .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+  .animate-fade-in-fast { animation: fadeIn 0.2s ease-in-out; }
+  .animate-fade-in-up { animation: fadeInUp 0.5s ease-in-out; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
