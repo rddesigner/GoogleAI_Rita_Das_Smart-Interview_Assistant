@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { GoogleGenAI, Type } from '@google/genai';
 import { ChatMessage } from '../app.component';
@@ -105,22 +106,14 @@ Example for an answer "I has experience with user research.":
   }
 
   async suggestAnswer(question: string, userAnswer: string): Promise<string> {
-    const userAnswerWordCount = userAnswer.split(/\s+/).filter(Boolean).length;
-    let maxWords = Math.min(120, userAnswerWordCount);
-    
-    // If the user's answer is very short, a suggestion of the same length isn't helpful.
-    // Provide a slightly more fleshed-out answer, but keep it concise.
-    if (userAnswerWordCount < 30) {
-      maxWords = 50;
-    }
-
     const prompt = `You are an expert career coach for senior UX professionals. The user was asked the following interview question: "${question}".
+Their original answer was: "${userAnswer}"
 
-Provide an ideal, model answer. Follow these strict rules:
-1.  **Style:** The answer must be crisp, simple, concise, and easy to understand. Use simple words and sentences. Avoid "jazzy" or complicated vocabulary. The tone must be professional and confident.
-2.  **Word Count:** The word count of your answer MUST be less than or equal to ${maxWords} words. This is a hard limit.
-3.  **Content:** The answer should be structured and demonstrate senior-level thinking.
-4.  **Formatting:** Do not add any preamble like 'Here is a suggested answer'. Just provide the answer itself.`;
+Your task is to refine and improve the user's answer. Follow these strict rules:
+1.  **Preserve Meaning:** Your suggested answer MUST convey the same core meaning and intent as the user's original answer. Do not introduce new ideas.
+2.  **Improve Clarity:** Rewrite the answer to be more crisp, professional, and impactful. Use simple words and clear sentences. Eliminate filler words and jargon.
+3.  **Be More Concise:** Your final suggested answer MUST have a lower word count than the user's original answer. This is a strict requirement.
+4.  **Formatting:** Do not add any preamble like 'Here is a suggested answer' or 'Here is a refined version'. Just provide the improved answer itself.`;
     return this.generateContent(prompt);
   }
 }

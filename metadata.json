@@ -1,5 +1,5 @@
 {
-  "name": "Smart Interview Assistant",
+  "name": "SMART UX INTERVIEW ASSSISTANT",
   "description": "An AI-powered app to practice your job interview skills. Upload your resume, answer questions via voice or text, and get instant feedback on your performance, including mistake analysis and suggested answers.",
   "requestFramePermissions": [
     "microphone"

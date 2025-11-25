@@ -1,10 +1,10 @@
 <div class="flex flex-col h-screen bg-gray-900 text-gray-100">
   <header class="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 p-4 shadow-lg">
-    <h1 class="text-xl md:text-2xl font-bold text-center text-indigo-400">
+    <h1 class="text-xl md:text-2xl font-bold text-center text-purple-400">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 inline-block -mt-1 mr-2" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"></path><path d="M12 6c-3.309 0-6 2.691-6 6s2.691 6 6 6 6-2.691 6-6-2.691-6-6-6zm0 10c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4z"></path><path d="M12 10c-1.103 0-2 .897-2 2s.897 2 2 2 2-.897 2-2-.897-2-2-2z"></path>
       </svg>
-      Smart Interview Assistant
+      SMART UX INTERVIEW ASSSISTANT
     </h1>
   </header>
 
@@ -15,7 +15,7 @@
         <p class="text-gray-400 mb-8 max-w-md mx-auto">
           Ready to ace your next UX interview? Upload your resume to begin a personalized, AI-powered practice session.
         </p>
-        <label for="resume-upload" class="cursor-pointer inline-block px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-500 transition-colors duration-300 shadow-lg">
+        <label for="resume-upload" class="cursor-pointer inline-block px-8 py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-500 transition-colors duration-300 shadow-lg">
           Upload Resume (PDF)
         </label>
         <input id="resume-upload" type="file" class="hidden" (change)="onFileSelected($event)" accept=".pdf" />
@@ -34,7 +34,7 @@
             <!-- Assistant Message -->
             @if (message.role === 'assistant') {
               <div class="flex items-start gap-4 animate-fade-in-up">
-                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white">AI</div>
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center font-bold text-white">AI</div>
                 <div class="bg-gray-700 rounded-lg p-4 max-w-xl">
                   <p class="whitespace-pre-wrap">{{ message.text }}</p>
                 </div>
@@ -44,7 +44,7 @@
             @if (message.role === 'user') {
               <div class="flex flex-col items-end animate-fade-in-up">
                   <div class="flex items-start gap-4 justify-end">
-                      <div class="bg-blue-600 rounded-lg p-4 max-w-xl order-1">
+                      <div class="bg-yellow-500 text-gray-900 font-medium rounded-lg p-4 max-w-xl order-1">
                           <p class="whitespace-pre-wrap">{{ message.text }}</p>
                       </div>
                       <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-600 flex items-center justify-center font-bold text-white order-2">You</div>
@@ -65,7 +65,7 @@
           }
           @if (appState() === 'loading') {
             <div class="flex items-start gap-4 animate-fade-in-up">
-                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white">AI</div>
+                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-500 flex items-center justify-center font-bold text-white">AI</div>
                 <div class="bg-gray-700 rounded-lg p-4 max-w-xl">
                   <div class="flex items-center gap-3">
                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
@@ -80,7 +80,7 @@
         <!-- Input Area -->
         <div class="p-4 bg-gray-900/50 border-t border-gray-700 relative">
           @if (isListening() && formattedCountdown()) {
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-indigo-400 font-mono text-lg rounded-md animate-pulse">
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-gray-900 text-purple-400 font-mono text-lg rounded-md animate-pulse">
               {{ formattedCountdown() }}
             </div>
           }
@@ -92,7 +92,7 @@
               (keydown.enter)="$event.shiftKey ? null : submitAnswer(); $event.shiftKey ? null : $event.preventDefault()"
               rows="1"
               placeholder="Type your answer or use the microphone..."
-              class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+              class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
               [disabled]="appState() === 'loading'"
             ></textarea>
             <button
@@ -112,7 +112,7 @@
             </button>
             <button
               type="submit"
-              class="p-3 bg-indigo-600 rounded-full hover:bg-indigo-500 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
+              class="p-3 bg-purple-600 rounded-full hover:bg-purple-500 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
               [disabled]="!userInput().trim() || appState() === 'loading'"
               title="Send Answer"
             >
@@ -125,6 +125,9 @@
       </div>
     }
   </main>
+  <footer class="p-2 text-center text-xs text-gray-600 bg-gray-900">
+    Copyright Rita Das
+  </footer>
 </div>
 
 <!-- Modal Overlay -->
@@ -132,7 +135,7 @@
   <div class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 animate-fade-in-fast" (click)="closeModal()">
     <div class="bg-gray-800 rounded-lg shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col" (click)="$event.stopPropagation()">
       <header class="flex items-center justify-between p-4 border-b border-gray-700">
-        <h3 class="text-lg font-semibold text-indigo-400">{{ modal.title }}</h3>
+        <h3 class="text-lg font-semibold text-purple-400">{{ modal.title }}</h3>
         <div class="flex items-center gap-2">
             @if (modal.isSuggestion) {
                 <button (click)="playSuggestionAudio()" title="Play audio" class="p-2 rounded-full hover:bg-gray-700 transition-colors">

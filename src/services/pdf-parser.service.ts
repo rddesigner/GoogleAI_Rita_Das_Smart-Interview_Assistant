@@ -5,7 +5,8 @@ import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 @Injectable({ providedIn: 'root' })
 export class PdfParserService {
   constructor() {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.mjs`;
+    // Using a more reliable, version-matched worker source from the same CDN as the library.
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://next.esm.sh/pdfjs-dist@4.4.168/build/pdf.worker.mjs`;
   }
 
   async getText(file: File): Promise<string> {
